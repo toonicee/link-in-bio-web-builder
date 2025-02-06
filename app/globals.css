@@ -9,6 +9,20 @@
   font-weight: 700;
 }
 
+#__next .ant-form-item-label > label,
+.ant-form-item-label > label {
+  font-weight: 700;
+}
+
+.ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.ant-btn-primary:hover {
+  background-color: var(--color-secondary) !important;
+  border-color: var(--color-secondary) !important;
+}
 
 @font-face {
   font-family: 'SF Pro Text';
@@ -76,6 +90,10 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --color-primary: #FF6107;    /* Vibrant Orange */
+    --color-secondary: #FBA518;  /* Deep Yellow  */
+    --color-accent: #C40018;     /* Deep Red */
+    --color-dark: #292725;       /* Rich Dark Gray */
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -106,10 +124,27 @@
 }
 
 @layer base {
-  * {
+  /* * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
-  }
+  } */
+  /* Background Colors */
+  .bg-primary { background-color: var(--color-primary); }
+  .bg-secondary { background-color: var(--color-secondary); }
+  .bg-accent { background-color: var(--color-accent); }
+  .bg-dark { background-color: var(--color-dark); }
+
+  /* Text Colors */
+  .text-primary { color: var(--color-primary); }
+  .text-secondary { color: var(--color-secondary); }
+  .text-accent { color: var(--color-accent); }
+  .text-dark { color: var(--color-dark); }
+
+  /* Border Colors */
+  .border-primary { border-color: var(--color-primary); }
+  .border-secondary { border-color: var(--color-secondary); }
+  .border-accent { border-color: var(--color-accent); }
+  .border-dark { border-color: var(--color-dark); }
 }

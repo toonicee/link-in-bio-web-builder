@@ -15,11 +15,22 @@ import {
 import { useWebsiteStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import {
-  PlusOutlined,
+  PlusSquareOutlined,
   MinusCircleOutlined,
   EditOutlined,
+  EyeOutlined,
+  DragOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import { Camera } from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import type {
+  DraggableProvided,
+  DraggableStateSnapshot,
+  
+} from "react-beautiful-dnd";
+import type { DropResult } from "react-beautiful-dnd";
+
 import { useState, useEffect } from "react";
 
 const { Title } = Typography;
@@ -33,6 +44,24 @@ export default function Home() {
   const [socialMediaFields, setSocialMediaFields] = useState([{ id: 0 }]);
   const [isLoading, setIsLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
+
+  const [sections, setSections] = useState<
+    {
+      id: string;
+      title: string;
+      link: string;
+      labelTitle: string;
+      labelLink: string;
+    }[]
+  >([
+    {
+      id: "section-1",
+      title: "",
+      link: "",
+      labelTitle: "Title",
+      labelLink: "Link",
+    },
+  ]);
 
   useEffect(() => {
     const savedImage = localStorage.getItem("uploadedImage");
@@ -96,6 +125,28 @@ export default function Home() {
     );
   }
 
+  const addSection = () => {
+    setSections([
+      ...sections,
+      {
+        id: `section-${sections.length + 1}`, // Ensure unique ID
+        title: "",
+        link: "",
+        labelTitle: "Title",
+        labelLink: "Link",
+      },
+    ]);
+  };
+
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const items = Array.from(sections);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setSections(items);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -111,7 +162,7 @@ export default function Home() {
               className="space-y-6"
               requiredMark={false}
             >
-              <Form.Item label="Picture" name="image">
+              <Form.Item label="Profile" name="image">
                 <div className="flex justify-center items-center">
                   <div className="relative">
                     <Upload {...uploadProps} showUploadList={false}>
@@ -142,9 +193,9 @@ export default function Home() {
               <Form.Item
                 label="Title"
                 name="title"
-                rules={[{ required: true, message: "Please enter the title!" }]}
+                rules={[{ required: true, message: "Please enter Title!" }]}
               >
-                <Input placeholder="Enter page title" />
+                <Input placeholder="Enter Title" />
               </Form.Item>
 
               <Form.Item
@@ -152,7 +203,12 @@ export default function Home() {
                 name="About"
                 rules={[{ required: true, message: "Please enter About You!" }]}
               >
-                <TextArea rows={6} placeholder="Enter About You" />
+                <TextArea
+                  rows={6}
+                  placeholder="Enter About You"
+                  maxLength={80}
+                  showCount
+                />
               </Form.Item>
 
               <Form.Item label="Social Link">
@@ -193,17 +249,73 @@ export default function Home() {
                   type="dashed"
                   onClick={addSocialMediaField}
                   block
-                  icon={<PlusOutlined />}
+                  icon={<PlusSquareOutlined />}
                 ></Button>
               </Form.Item>
 
-              <Form.Item>
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="sections">
+                  {(provided) => (
+                    <div {...provided.droppableProps} ref={provided.innerRef}>
+                      {sections.map((section, index) => (
+                        <Draggable
+                          key={section.id}
+                          draggableId={section.id}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className="mb-4 p-4 border rounded-lg"
+                            >
+                              <div className="flex justify-between items-center mb-2">
+                                <div>
+                                  <DragOutlined className="text-gray-400 cursor-move" />
+                                </div>
+                                <Button
+                                  type="text"
+                                  danger
+                                  onClick={() => {
+                                    const newSections = sections.filter(
+                                      (s) => s.id !== section.id
+                                    );
+                                    setSections(newSections);
+                                  }}
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                              {/* Rest of your section content */}
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+
+              <Button
+                type="dashed"
+                onClick={addSection}
+                block
+                icon={<PlusOutlined />}
+              >
+                Add Section
+              </Button>
+
+              <Form.Item className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
                 <Button
                   type="primary"
+                  shape="round"
+                  size="large"
                   htmlType="submit"
-                  block
                   loading={isLoading}
-                  className="bg-blue-500 hover:bg-blue-500"
+                  className="bg-primary hover:bg-secondary text-white flex items-center justify-center gap-2 shadow-lg px-12 font-bold"
+                  icon={<EyeOutlined />}
                 >
                   {isLoading ? "Loading..." : "Preview"}
                 </Button>
