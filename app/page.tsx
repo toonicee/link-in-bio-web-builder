@@ -10,16 +10,16 @@ import {
   UploadProps,
   message,
   Spin,
+  Avatar,
 } from "antd";
 import { useWebsiteStore } from "@/lib/store";
 import { useRouter } from "next/navigation";
 import {
-  UploadOutlined,
   PlusOutlined,
   MinusCircleOutlined,
   EditOutlined,
-  DeleteOutlined,
 } from "@ant-design/icons";
+import { Camera } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const { Title } = Typography;
@@ -100,7 +100,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <Title level={1} className="text-center mb-8">
+          <Title level={1} className="text-center mb-8 ">
             Bio Link
           </Title>
 
@@ -109,56 +109,36 @@ export default function Home() {
               layout="vertical"
               onFinish={handlePreview}
               className="space-y-6"
+              requiredMark={false}
             >
-              <Form.Item
-                label="Picture"
-                name="image"
-                rules={[{ required: true, message: "Please upload an image!" }]}
-              >
-                <div className="flex flex-col items-center space-y-4">
-                  <Upload
-                    {...uploadProps}
-                    listType="picture-circle"
-                    className="avatar-uploader"
-                    showUploadList={false}
-                  >
-                    {imageUrl ? (
-                      <div className="relative w-full h-full group">
-                        <img
-                          src={imageUrl}
-                          alt="Avatar"
-                          className="w-full h-full object-cover rounded-full"
+              <Form.Item label="Picture" name="image">
+                <div className="flex justify-center items-center">
+                  <div className="relative">
+                    <Upload {...uploadProps} showUploadList={false}>
+                      <div className="cursor-pointer relative group">
+                        <Avatar
+                          size={80}
+                          src={
+                            imageUrl ||
+                            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          }
+                          className="border-4 border-white"
                         />
-                        <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                          <div className="text-white text-center">
-                            <EditOutlined className="text-lg" />
-                            <div className="text-xs mt-1">Update</div>
-                          </div>
+                        <Button
+                          shape="circle"
+                          size="small"
+                          className="absolute bottom-0 right-0 bg-white"
+                          icon={<Camera size={16} />}
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                          <EditOutlined className="text-white text-lg" />
                         </div>
                       </div>
-                    ) : (
-                      <div>
-                        <PlusOutlined />
-                        <div style={{ marginTop: 8 }}>Upload</div>
-                      </div>
-                    )}
-                  </Upload>
-                  {imageUrl && (
-                    <Button
-                      type="text"
-                      danger
-                      icon={<DeleteOutlined />}
-                      onClick={() => {
-                        setImageUrl("");
-                        localStorage.removeItem("uploadedImage");
-                        message.success("Image removed successfully!");
-                      }}
-                    >
-                      Remove Image
-                    </Button>
-                  )}
+                    </Upload>
+                  </div>
                 </div>
               </Form.Item>
+
               <Form.Item
                 label="Title"
                 name="title"
@@ -175,7 +155,7 @@ export default function Home() {
                 <TextArea rows={6} placeholder="Enter About You" />
               </Form.Item>
 
-              <Form.Item label="Social Media Links">
+              <Form.Item label="Social Link">
                 {socialMediaFields.map((field) => (
                   <div key={field.id} className="flex gap-2 mb-2">
                     <Form.Item
@@ -214,9 +194,7 @@ export default function Home() {
                   onClick={addSocialMediaField}
                   block
                   icon={<PlusOutlined />}
-                >
-                  Add Social Media
-                </Button>
+                ></Button>
               </Form.Item>
 
               <Form.Item>
